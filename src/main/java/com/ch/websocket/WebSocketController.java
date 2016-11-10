@@ -23,15 +23,15 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @RestController
 @RequestMapping("/websocket")
-public class MyWebSocket {
+public class WebSocketController {
 
     private static int onlineCount = 0;
 
-    private static CopyOnWriteArraySet<MyWebSocket> webSocketSet = new CopyOnWriteArraySet<MyWebSocket>();
+    private static CopyOnWriteArraySet<WebSocketController> webSocketSet = new CopyOnWriteArraySet<WebSocketController>();
 
     private Session session;
 
-    @RequestMapping("/hi")
+    @RequestMapping("/chat")
     public ModelAndView websocket() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("count_num", getOnlineCount());
@@ -47,10 +47,12 @@ public class MyWebSocket {
         addOnlineCount();
         System.out.println("有新链接加入!当前在线人数为" + getOnlineCount() + ", 你的ID是：" + session.getId());
         //推送当前在线人数
-        Message message = new Message("onLineCount", getOnlineCount() + "");
-        for (MyWebSocket item : webSocketSet) {
+        Message message = new Message("open", getOnlineCount() + "", Integer.valueOf(session.getId()));
+        for (WebSocketController item : webSocketSet) {
             item.sendObjectMessage(message);
         }
+        Message userId = new Message("user_id", getOnlineCount() + "", Integer.valueOf(session.getId()));
+        this.sendObjectMessage(userId);
     }
 
     @OnClose
@@ -59,8 +61,8 @@ public class MyWebSocket {
         subOnlineCount();
         System.out.println("有一链接关闭,ID=" + session.getId() + "!当前在线人数为" + getOnlineCount());
         //推送当前在线人数
-        Message message = new Message("onLineCount", getOnlineCount() + "");
-        for (MyWebSocket item : webSocketSet) {
+        Message message = new Message("close", getOnlineCount() + "", Integer.valueOf(session.getId()));
+        for (WebSocketController item : webSocketSet) {
             item.sendObjectMessage(message);
         }
     }
@@ -69,7 +71,8 @@ public class MyWebSocket {
     public void onMessage(Message message, Session session) throws IOException, EncodeException {
         System.out.println("来自客户端ID=" + session.getId() + "的消息:" + message.toString());
         // 群发消息
-        for (MyWebSocket item : webSocketSet) {
+        message.setUserId(Integer.valueOf(session.getId()));
+        for (WebSocketController item : webSocketSet) {
 //            item.sendMessage(message);
             item.sendObjectMessage(message);
         }
@@ -84,15 +87,15 @@ public class MyWebSocket {
     }
 
     public static synchronized int getOnlineCount() {
-        return MyWebSocket.onlineCount;
+        return WebSocketController.onlineCount;
     }
 
     public static synchronized void addOnlineCount() {
-        MyWebSocket.onlineCount++;
+        WebSocketController.onlineCount++;
     }
 
     public static synchronized void subOnlineCount() {
-        MyWebSocket.onlineCount--;
+        WebSocketController.onlineCount--;
     }
 
 }

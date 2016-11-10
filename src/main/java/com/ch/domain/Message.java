@@ -10,6 +10,15 @@ public class Message implements Serializable{
     private static final long serialVersionUID = 7618420761480379523L;
     private String message;
     private String type;
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
     public Message() {
     }
@@ -17,6 +26,13 @@ public class Message implements Serializable{
     public Message(String type, String message) {
         this.message = message;
         this.type = type;
+        this.userId = -1;
+    }
+
+    public Message(String type, String message, int userId) {
+        this.message = message;
+        this.type = type;
+        this.userId = userId;
     }
 
     public String getMessage() {

@@ -7,7 +7,8 @@
 
 <body>
 <br/>
-<text id="count_num">当前在线人数${count_num}</br></text>
+<div id="user_id"></div>
+<div id="count_num">当前在线人数: ${count_num}</br></div>
 <input id="text" type="text"/>
 <button onclick="send()">Send</button>
 <button onclick="closeWebSocket()">Close</button>
@@ -17,7 +18,7 @@
 
 <script type="text/javascript">
     var websocket = null;
-
+    var user_id = null;
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
         websocket = new WebSocket("ws://localhost:8080/websocket");
@@ -33,7 +34,7 @@
 
     //连接成功建立的回调方法
     websocket.onopen = function (event) {
-        setMessageInnerHTML("open");
+        setMessageInnerHTML("系统消息--> 链接服务器成功！");
     }
 
     //接收到消息的回调方法
@@ -43,13 +44,25 @@
             countOnlineNumber(json.message);
         }
         if(json.type == "msg"){
-            setMessageInnerHTML(json.message);
+            setMessageInnerHTML("接收到 "+ json.userId + " 发来的消息： " + json.message);
+        }
+        if(json.type == "close"){
+            countOnlineNumber(json.message);
+            setMessageInnerHTML("系统消息--> "+ json.userId + " 悄悄的离开了! ");
+        }
+        if(json.type == "open"){
+            countOnlineNumber(json.message);
+            //showId(json.userId);
+            setMessageInnerHTML("系统消息--> "+ json.userId + " 悄悄的来了! ");
+        }
+        if(json.type == "user_id"){
+            showId(json.userId);
         }
     }
 
     //连接关闭的回调方法
     websocket.onclose = function () {
-        setMessageInnerHTML("close");
+        setMessageInnerHTML("系统消息--> 断开与服务器的链接！");
     }
 
     //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
@@ -64,7 +77,12 @@
 
     //显示在线人数
     function countOnlineNumber(innerHTML) {
-        document.getElementById('count_num').innerHTML = innerHTML + '<br/>';
+        document.getElementById('count_num').innerHTML = "当前在线人数:"+innerHTML + '<br/>';
+    }
+
+    //显示个人ID
+    function showId(innerHTML) {
+        document.getElementById('user_id').innerHTML = "你的id：" + innerHTML + '<br/>';
     }
 
     //关闭连接

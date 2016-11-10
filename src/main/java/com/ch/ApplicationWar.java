@@ -17,10 +17,10 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 @EnableAutoConfiguration
 public class ApplicationWar extends SpringBootServletInitializer {
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(ApplicationWar.class);
-    }
+//    @Override
+//    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+//        return application.sources(ApplicationWar.class);
+//    }
 //    public static void main(String[] args) {
 //        SpringApplication.run(ApplicationWar.class,args);
 //    }
