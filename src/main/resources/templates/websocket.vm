@@ -5,9 +5,10 @@
     <title>聊天室</title>
 </head>
 
-<body>
+<body onload="fillName()">
 <br/>
 <div id="user_id"></div>
+<div id="user_name"></div>
 <div id="count_num">当前在线人数: ${count_num}</br></div>
 <input id="text" type="text"/>
 <button onclick="send()">Send</button>
@@ -19,6 +20,7 @@
 <script type="text/javascript">
     var websocket = null;
     var user_id = null;
+    var user_name = null;
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
         websocket = new WebSocket("ws://localhost:8080/websocket");
@@ -35,6 +37,11 @@
     //连接成功建立的回调方法
     websocket.onopen = function (event) {
         setMessageInnerHTML("系统消息--> 链接服务器成功！");
+        var json = {
+            'type' : "userName",
+            'userName' : user_name
+        };
+        websocket.send(JSON.stringify(json));
     }
 
     //接收到消息的回调方法
@@ -44,19 +51,26 @@
             countOnlineNumber(json.message);
         }
         if(json.type == "msg"){
-            setMessageInnerHTML("接收到 "+ json.userId + " 发来的消息： " + json.message);
+            if(json.userName == user_name){
+                setMessageInnerHTML("你发送了消息： " + json.message);
+            } else {
+                setMessageInnerHTML("接收到 "+ json.userName + " 发来的消息： " + json.message);
+            }
         }
         if(json.type == "close"){
             countOnlineNumber(json.message);
-            setMessageInnerHTML("系统消息--> "+ json.userId + " 悄悄的离开了! ");
+            setMessageInnerHTML("系统消息--> "+ json.userName + " 悄悄的离开了! ");
         }
         if(json.type == "open"){
             countOnlineNumber(json.message);
-            //showId(json.userId);
-            setMessageInnerHTML("系统消息--> "+ json.userId + " 悄悄的来了! ");
+
         }
-        if(json.type == "user_id"){
+        if(json.type == "userId"){
             showId(json.userId);
+        }
+        if(json.type == "userName"){
+            setMessageInnerHTML("系统消息--> "+ json.userName + " 悄悄的来了! ");
+            showName(user_name);
         }
     }
 
@@ -85,6 +99,11 @@
         document.getElementById('user_id').innerHTML = "你的id：" + innerHTML + '<br/>';
     }
 
+    //显示个人昵称
+    function showName(innerHTML) {
+        document.getElementById('user_name').innerHTML = "你的昵称：" + innerHTML + '<br/>';
+    }
+
     //关闭连接
     function closeWebSocket() {
         websocket.close();
@@ -95,10 +114,20 @@
         var message = document.getElementById('text').value;
         var json = {
             'type' : "msg",
-            'message' : message
+            'message' : message,
+            'userName' : user_name
         };
         websocket.send(JSON.stringify(json));
         //websocket.send(message);
+    }
+
+    //录入用户名
+    function fillName() {
+        var name=prompt("Please enter your name","")
+           if (name!=null && name!="")
+           {
+              user_name = name;
+           }
     }
 </script>
 </html>
