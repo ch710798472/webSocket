@@ -1,0 +1,34 @@
+.chatLeft {
+   text-align: left;
+   text-indent: 1em;
+   color: skyblue;
+   font-family: arial;
+}
+.chatRight {
+   text-align: right;
+   color: skyblue;
+   font-family: arial;
+}
+.chatCenter {
+   text-align: center;
+   color: darkgrey;
+   font-family: arial;
+}
+.chatTips {
+   margin: 0 auto;
+   width:60%;
+   height:20%;
+   color: skyblue;
+   font-family: arial;
+}
+body {
+  margin: 10;
+  padding: 2;
+  font-family: Georgia, Palatino, serif;
+}
+.chatHistoryContain {
+    margin: 0 auto;
+    width:60%;
+    height:70%;
+    background:ivory;
+}

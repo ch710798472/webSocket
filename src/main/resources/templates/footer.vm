@@ -1,0 +1,7 @@
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    _DocumentTitles = new Array('life','love','dogs','cats');
+    _DocumentTitleIndex = Math.floor(Math.random() * _DocumentTitles.length);
+    document.title = 'chat - ' +'v0.1' + ' - '+ _DocumentTitles[_DocumentTitleIndex];
+</script>
